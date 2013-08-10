@@ -55,6 +55,10 @@ if (isset($_REQUEST['command'])) {
             break;
     }
 }
+if (!isset($_REQUEST['command'])) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+    die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'I have no idea what you want me to do!')));
+}
 $latitude_move = 0;
 $longitude_move = 0;
 if (!is_null($movement_bearing) && !is_null($command) && in_array($command,$dm_commands,true)) {
