@@ -7,11 +7,14 @@ $default_latitude = 53.80134;
 $default_longitude = -1.53687;
 $location_file = 'location.json';
 $bearing = 0;
-$dm_commands = array('move_forward','move_backward','move_left','move_right');
+$dm_commands = array('forward','backward','left','right');
 
 if (file_exists($location_file)) {
     $contents = file_get_contents($location_file);
     $location = json_decode($contents,true);
+    if (array_key_exists('bearing', $_REQUEST)) {
+        $bearing = $location['bearing'];
+    }
 } else {
     $location = array('latitude'=>$default_latitude,'longitude'=>$default_longitude);
 }
@@ -41,10 +44,14 @@ if (isset($_REQUEST['command'])) {
             break;
         case 'view' :
             $command = 'view';
-            if (!isset($_REQUEST['heading']) || !isset($_REQUEST['lat']) || !isset($_REQUEST['lng'])) {
+            if (!isset($_REQUEST['heading']) || !isset($_REQUEST['lat']) || !isset($_REQUEST['lng']) ||
+                !is_float($_REQUEST['heading']) || !is_float($_REQUEST['lat']) || !is_float($_REQUEST['lng'])) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected three options!')));
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected three floating-point options!')));
             }
+            $location['bearing'] = (float)$_REQUEST['heading'];
+            $location['latitude'] = (float)$_REQUEST['lat'];
+            $location['longitude'] = (float)$_REQUEST['lng'];
             break;
     }
 }
