@@ -7,14 +7,15 @@
 // Parameters
 // ----------------------------------------------
 var QUALITY = 3;
-var DEFAULT_LOCATION = { lat:44.301945982379095,  lng:9.211585521697998 };
+var DEFAULT_LOCATION = { lat:53.79857299999999,  lng:-1.5364359999999997 };
+var URL_LOCATION = { lat:53.79857299999999,  lng:-1.5364359999999997 };
 var WEBSOCKET_ADDR = "ws://127.0.0.1:1981";
 var USE_TRACKER = false;
 var MOUSE_SPEED = 0.005;
 var KEYBOARD_SPEED = 0.02;
 var GAMEPAD_SPEED = 0.04;
 var DEADZONE = 0.2;
-var SHOW_SETTINGS = true;
+var SHOW_SETTINGS = false;
 var NAV_DELTA = 45;
 var FAR = 1000;
 var USE_DEPTH = true;
@@ -347,7 +348,7 @@ function initPano() {
   };
 
   panoLoader.onNoPanoramaData = function( status ) {
-    //alert('no data!');
+    alert('no data!');
   };
 
   panoLoader.onPanoramaLoad = function() {
@@ -658,6 +659,24 @@ function loop() {
 
   // render
   render();
+  
+  // check for new location here
+  // http://lh2013.ranyard.info/server/
+/*
+  var streetViewService = new google.maps.StreetViewService();
+
+streetViewService.getPanoramaByLocation(latLng, radius, function(data, status)
+{
+    if (status == google.maps.StreetViewStatus.OK)
+    {
+        var nearStreetViewLocation = data.location.latLng;              
+    }
+});    
+
+*/
+
+
+
 }
 
 function getParams() {
@@ -670,12 +689,29 @@ function getParams() {
   return params;
 }
 
+
+// goto the nearest available view
+function goto_latlng(lat,lng)
+{
+  var streetViewService = new google.maps.StreetViewService();
+
+streetViewService.getPanoramaByLocation( new google.maps.LatLng( lat, lng ) , 49 , function(data, status)
+{
+    if (status == google.maps.StreetViewStatus.OK)
+    {
+		currentLocation=data.location.latLng;
+		panoLoader.load( data.location.latLng );
+    }
+});    
+
+}
+
 $(document).ready(function() {
 
   // Read parameters
   params = getParams();
-  if (params.lat !== undefined) DEFAULT_LOCATION.lat = params.lat;
-  if (params.lng !== undefined) DEFAULT_LOCATION.lng = params.lng;
+  if (params.lat !== undefined) URL_LOCATION.lat = params.lat;
+  if (params.lng !== undefined) URL_LOCATION.lng = params.lng;
   if (params.sock !== undefined) {WEBSOCKET_ADDR = 'ws://'+params.sock; USE_TRACKER = true;}
   if (params.q !== undefined) QUALITY = params.q;
   if (params.s !== undefined) SHOW_SETTINGS = params.s !== "false";
@@ -710,7 +746,9 @@ $(document).ready(function() {
   initGoogleMap();
 
   // Load default location
-  panoLoader.load( new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng ) );
+//  panoLoader.load( new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng ) );
+
+goto_latlng( URL_LOCATION.lat, URL_LOCATION.lng );
 
   loop();
 });
