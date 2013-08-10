@@ -22,7 +22,7 @@ function float_array_valid($array,$keys) {
 if (file_exists($location_file)) {
     $contents = file_get_contents($location_file);
     $location = json_decode($contents,true);
-    if (array_key_exists('bearing', $_REQUEST)) {
+    if (array_key_exists('bearing', $location)) {
         $bearing = deg2rad($location['bearing']);
     }
 } else {
