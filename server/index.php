@@ -43,6 +43,7 @@ if (isset($_REQUEST['command'])) {
             $command = 'view';
             if (!isset($_REQUEST['heading']) || !isset($_REQUEST['lat']) || !isset($_REQUEST['lng'])) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected three options!')));
             }
             break;
     }
