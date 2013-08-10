@@ -59,12 +59,11 @@ if (isset($_REQUEST['command'])) {
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected three floating-point options!')));
             }
             $location['bearing'] = (float)$_REQUEST['heading'];
-            if ((array_key_exists('last_lat',$location) && $location['last_lat'] != $_REQUEST['lat']) ||
-                (array_key_exists('last_lng',$location) && $location['last_lng'] != $_REQUEST['lng'])) {
+            if (array_key_exists('moved_recently',$location) && !$location['moved_recently']) {
                 $location['latitude'] = (float)$_REQUEST['lat'];
                 $location['longitude'] = (float)$_REQUEST['lng'];
-                $location['last_lat'] = $_REQUEST['lat'];
-                $location['last_lng'] = $_REQUEST['lng'];
+            } else {
+                $location['moved_recently'] = false;
             }
             break;
     }
@@ -81,6 +80,7 @@ if (!is_null($movement_bearing) && !is_null($command) && in_array($command,$dm_c
     $longitude_move = $meters_to_move * sin($movement_bearing) / $longitude_meters;
     $location['latitude'] = (float)$location['latitude']+(float)$latitude_move;
     $location['longitude'] = (float)$location['longitude']+(float)$longitude_move;
+    $location['moved_recently'] = true;
 }
 file_put_contents($location_file,json_encode($location));
 echo json_encode($location);
