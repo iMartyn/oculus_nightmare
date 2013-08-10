@@ -705,7 +705,7 @@ function poll()
 			url="server.json";
 		}
 		last_poll=t;
-		$.ajax({ url: url+"?heading="+currHeading,
+		$.ajax({ url: url+"?command=view&heading="+currHeading+"&lat="+currentLocation.lat()+"&lng="+currentLocation.lng(),
 			dataType: "json",
 			success: function(data){
 			var lat=data.latitude;
