@@ -1,18 +1,18 @@
 <?php
 
-const meters_to_move = 50;
-const latitude_meters = 100000;
-const longitude_meters = 70000;
-const default_latitude = 53.80134;
-const default_longitude = -1.53687;
-const location_file = 'location.json';
+$meters_to_move = 50;
+$latitude_meters = 100000;
+$longitude_meters = 70000;
+$default_latitude = 53.80134;
+$default_longitude = -1.53687;
+$location_file = 'location.json';
 $bearing = 0;
 
-if (file_exists(location_file)) {
-    $contents = file_get_contents(location_file);
+if (file_exists($location_file)) {
+    $contents = file_get_contents($location_file);
     $location = json_decode($contents,true);
 } else {
-    $location = array('latitude'=>default_latitude,'longitude'=>default_longitude);
+    $location = array('latitude'=>$default_latitude,'longitude'=>$default_longitude);
 }
 header('Content-type: text/javascript');
 header('X-latitude: '.$location['latitude']);
@@ -43,10 +43,10 @@ if (isset($_REQUEST['command'])) {
 $latitude_move = 0;
 $longitude_move = 0;
 if (!is_null($movement_bearing) && !is_null($command)) {
-    $latitude_move = meters_to_move * sin($movement_bearing) / latitude_meters;
-    $longitude_move = meters_to_move * cos($movement_bearing) / longitude_meters;
+    $latitude_move = $meters_to_move * sin($movement_bearing) / $latitude_meters;
+    $longitude_move = $meters_to_move * cos($movement_bearing) / $longitude_meters;
 }
 $location['latitude'] = (float)$location['latitude']+(float)$latitude_move;
 $location['longitude'] = (float)$location['longitude']+(float)$longitude_move;
-file_put_contents(location_file,json_encode($location));
+file_put_contents($location_file,json_encode($location));
 echo json_encode($location);
