@@ -7,6 +7,7 @@ $default_latitude = 53.80134;
 $default_longitude = -1.53687;
 $location_file = 'location.json';
 $bearing = 0;
+$dm_commands = array('move_forward','move_backward','move_left','move_right');
 
 if (file_exists($location_file)) {
     $contents = file_get_contents($location_file);
@@ -38,15 +39,22 @@ if (isset($_REQUEST['command'])) {
             $command = 'right';
             $movement_bearing = $bearing + (pi()/2);
             break;
+        case 'view' :
+            $command = 'view';
+            if (!isset($_REQUEST['heading']) || !isset($_REQUEST['lat']) || !isset($_REQUEST['lng'])) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            }
+            break;
     }
 }
 $latitude_move = 0;
 $longitude_move = 0;
-if (!is_null($movement_bearing) && !is_null($command)) {
+if (!is_null($movement_bearing) && !is_null($command) && in_array($command,$dm_commands,true)) {
+    /* This is here because it's a movement command and so we don't want copy and paste. */
     $latitude_move = $meters_to_move * sin($movement_bearing) / $latitude_meters;
     $longitude_move = $meters_to_move * cos($movement_bearing) / $longitude_meters;
+    $location['latitude'] = (float)$location['latitude']+(float)$latitude_move;
+    $location['longitude'] = (float)$location['longitude']+(float)$longitude_move;
 }
-$location['latitude'] = (float)$location['latitude']+(float)$latitude_move;
-$location['longitude'] = (float)$location['longitude']+(float)$longitude_move;
 file_put_contents($location_file,json_encode($location));
 echo json_encode($location);
