@@ -23,7 +23,7 @@ if (file_exists($location_file)) {
     $contents = file_get_contents($location_file);
     $location = json_decode($contents,true);
     if (array_key_exists('bearing', $_REQUEST)) {
-        $bearing = $location['bearing'];
+        $bearing = deg2rad($location['bearing']);
     }
 } else {
     $location = array('latitude'=>$default_latitude,'longitude'=>$default_longitude);
@@ -77,8 +77,8 @@ $latitude_move = 0;
 $longitude_move = 0;
 if (!is_null($movement_bearing) && !is_null($command) && in_array($command,$dm_commands,true)) {
     /* This is here because it's a movement command and so we don't want copy and paste. */
-    $latitude_move = $meters_to_move * sin($movement_bearing) / $latitude_meters;
-    $longitude_move = $meters_to_move * cos($movement_bearing) / $longitude_meters;
+    $latitude_move = $meters_to_move * cos($movement_bearing) / $latitude_meters;
+    $longitude_move = $meters_to_move * sin($movement_bearing) / $longitude_meters;
     $location['latitude'] = (float)$location['latitude']+(float)$latitude_move;
     $location['longitude'] = (float)$location['longitude']+(float)$longitude_move;
 }
