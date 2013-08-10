@@ -374,6 +374,7 @@ function initPano() {
 
     $('.mapprogress').hide();
 
+/*
     if (window.history) {
       var newUrl = '/?lat='+this.location.latLng.lat()+'&lng='+this.location.latLng.lng();
       newUrl += USE_TRACKER ? '&sock='+escape(WEBSOCKET_ADDR.slice(5)) : '';
@@ -382,6 +383,7 @@ function initPano() {
       newUrl += '&heading='+currHeading;
       window.history.pushState('','',newUrl);
     }
+*/
 
     panoDepthLoader.load(this.location.pano);
   };
@@ -676,7 +678,7 @@ streetViewService.getPanoramaByLocation(latLng, radius, function(data, status)
 */
 
 
-
+	poll();
 }
 
 function getParams() {
@@ -689,6 +691,26 @@ function getParams() {
   return params;
 }
 
+
+var last_poll=0;
+function poll()
+{
+	var t=(new Date()).getTime();
+	if( (t-1000) > last_poll )
+	{
+		var url="http://lh2013.ranyard.info/server/";
+		if( "file:"==String(document.URL).slice(0,5) )
+		{
+			url="server.json";
+		}
+		last_poll=t;
+		$.ajax({ url: url+"?heading="+currHeading,
+			success: function(data){
+//			console.log("Polling!");
+//			console.log(data);
+		}, timeout: 1000});
+	}
+}
 
 // goto the nearest available view
 function goto_latlng(lat,lng)
