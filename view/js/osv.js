@@ -6,7 +6,7 @@
 
 // Parameters
 // ----------------------------------------------
-var QUALITY = 1;
+var QUALITY = 2;
 var DEFAULT_LOCATION = { lat:53.79857299999999,  lng:-1.5364359999999997 };
 var URL_LOCATION = { lat:53.79857299999999,  lng:-1.5364359999999997 };
 var WEBSOCKET_ADDR = "ws://127.0.0.1:1981";
