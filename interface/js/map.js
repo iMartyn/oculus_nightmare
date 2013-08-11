@@ -1,7 +1,10 @@
 var map;
-var brooklyn = new google.maps.LatLng(53.80134, -1.53687) // really not
 
-var MY_MAPTYPE_ID = 'custom_style';
+function command_url(command) {
+    var this_location = document.location.toString();
+    var base_url = this_location.replace(/\/interface.*/,'');
+    return base_url + '/server/?command=' + command;
+}
 
 function update_map(data) {
     var latlng = new google.maps.LatLng(data.latitude, data.longitude);
@@ -11,11 +14,10 @@ function update_map(data) {
     }
 }
 
-function initialize() {
+function init_maps() {
 
   var mapOptions = {
     zoom: 17,
-    center: brooklyn,
     disableDefaultUI: true,
     styles: [
       {
@@ -49,5 +51,12 @@ function initialize() {
   }, 1000);
 }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+jQuery(document).ready(function () {
+    init_maps();
+    jQuery("i").click(function(sender) {
+	var command = jQuery(sender.delegateTarget).attr('id');
+        var action_url = command_url(command);
+        jQuery.get(action_url);
+    });
+});
 
