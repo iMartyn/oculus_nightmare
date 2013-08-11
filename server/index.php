@@ -142,7 +142,7 @@ if (isset($_REQUEST['command'])) {
                 file_put_contents($users_file,json_encode(array('-1'=>'')));
             }
             $users = json_decode(file_get_contents($users_file),true);
-            if (!is_set($_REQUEST['user_id']) || !array_key_exists($_REQUEST['user_id'],$users)) {
+            if (!isset($_REQUEST['user_id']) || !array_key_exists($_REQUEST['user_id'],$users)) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
                 rmdir($lock_dir);
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'User not registered')));
@@ -159,7 +159,7 @@ if (isset($_REQUEST['command'])) {
                 rmdir($lock_dir);
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
             }
-            if (!is_set($_REQUEST['game_id']) || !array_key_exists($_REQUEST['game_id'],$games) ||
+            if (!isset($_REQUEST['game_id']) || !array_key_exists($_REQUEST['game_id'],$games) ||
                 $games[$_REQUEST['game_id']]['won'] !== true) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
                 rmdir($lock_dir);
@@ -214,6 +214,9 @@ if (isset($_REQUEST['command'])) {
             $key = array_rand($places);
             $placeList = some_random_places($places,4,$key);
             $place = $places[$key];
+            foreach ($games as $id=>$game) {
+                $game['won'] = true;
+            }
             $games[$next_id] = array('id'=>$next_id,'won'=>false,
                 'places'=>$placeList,
                 'lat'=>$place['lat'], 'lng'=>$place['lng'],
@@ -225,6 +228,51 @@ if (isset($_REQUEST['command'])) {
             file_put_contents($location_file,json_encode($location));
             rmdir($lock_dir);
             die(json_encode($games[$next_id]));
+            break;
+        case 'game_status' :
+            $command = 'game_status';
+            if (!file_exists($users_file)) {
+                file_put_contents($users_file,json_encode(array('-1'=>'')));
+            }
+            $users = json_decode(file_get_contents($users_file),true);
+            if (isset($_REQUEST['user_id']) || array_key_exists($_REQUEST['user_id'],$users)) {
+                $userid = $_REQUEST['user_id'];
+            } else {
+                $userid = null;
+            }
+            if (!file_exists($games_file)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
+            }
+            $games = json_decode(file_get_contents($games_file),true);
+            if (empty($games)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
+            }
+            if (!isset($_REQUEST['game_id']) || !array_key_exists($_REQUEST['game_id'],$games)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Game not in progress or complete')));
+            }
+            $gameid = $_REQUEST['game_id'];
+            if (!in_array('uservotes',$games[$gameid])) {
+                $games[$gameid]['uservotes'] = array();
+            }
+            $game = $games[$gameid];
+            $data = array();
+            if (!is_null($userid)) {
+                $userdata = $game['uservotes'][$userid];
+                $data['userdata'] = $userdata;
+            }
+            if ($game['won']) {
+                $resultdata = array('voted'=>count($game['uservotes']),'correctanswer'=>$game['correct']);
+                $data['results'] = $resultdata;
+            }
+            $data['complete'] = $game['won'];
+            rmdir($lock_dir);
+            die(json_encode($data));
             break;
         case 'status' :
             break;
