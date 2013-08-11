@@ -34,7 +34,8 @@ img.blink					{-webkit-animation: blink 30s; -webkit-animation-iteration-count: 
 
 .inter_wrap			{width:640px; height:480px; margin:0 auto; margin-top:20px;}
 .inter_banner		{width:640px; height:200px;margin:0 auto; text-align:center;}
-.inter_map			{width:640px; height:250px; background-color:#222; text-align:center; color:#fff; font-size:42px; line-height:40px;}
+.inter_map_wrap		{margin:0 auto; text-align:center; width:250px; height:250px; overflow:hidden; border-radius:50%;}
+.inter_map			{top:-20px; width:250px; height:290px; background-color:#222; overflow:hidden;}
 .inter_foot			{width:640px; height:150px; background-color:transparent;}
 .inter_multi_wrap	{width:320px; height:150px; float:left; text-align:center; color:#fff;}
 .inter_multi		{width:320px; height:125px; background-color:#000; padding-top:15px;}
