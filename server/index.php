@@ -215,7 +215,7 @@ if (isset($_REQUEST['command'])) {
             $placeList = some_random_places($places,4,$key);
             $place = $places[$key];
             foreach ($games as $id=>$game) {
-                $game['won'] = true;
+                $games[$id]['won'] = true;
             }
             $games[$next_id] = array('id'=>$next_id,'won'=>false,
                 'places'=>$placeList,
