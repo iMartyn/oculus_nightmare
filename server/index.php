@@ -56,14 +56,9 @@ if (file_exists($location_file)) {
 }
 
 header('Content-type: text/javascript');
-if (file_exists('singlethread.lock')) {
+while (!mkdir('singlethread.lock')) {
     usleep(350);
-    if (file_exists('singlethread.lock')) {
-        header($_SERVER['SERVER_PROTOCOL'] . ' 503 Service Unavailable', true, 503);
-        die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Threadlocked!')));
-    }
 }
-file_put_contents('singlethread.lock', 'locked');
 header('X-latitude: '.$location['latitude']);
 header('X-longitude: '.$location['longitude']);
 
@@ -91,7 +86,7 @@ if (isset($_REQUEST['command'])) {
             $command = 'bodge';
             if (!float_array_valid($_REQUEST,array('lat','lng'))) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                unlink('singlethread.lock');
+                rmdir('singlethread.lock');
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected two floating-point options!')));
             }
             $location['latitude'] = (float)$_REQUEST['lat'];
@@ -102,7 +97,7 @@ if (isset($_REQUEST['command'])) {
             $command = 'view';
             if (!float_array_valid($_REQUEST,array('heading','lat','lng'))) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                unlink('singlethread.lock');
+                rmdir('singlethread.lock');
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected three floating-point options!')));
             }
             $location['bearing'] = (float)$_REQUEST['heading'];
@@ -117,12 +112,12 @@ if (isset($_REQUEST['command'])) {
             $command = 'register';
             if (!array_key_exists('mobile',$_REQUEST) || !array_key_exists('name',$_REQUEST)) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                unlink('singlethread.lock');
+                rmdir('singlethread.lock');
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected mobile number and name')));
             }
             if (!valid_name($_REQUEST['name'])) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                unlink('singlethread.lock');
+                rmdir('singlethread.lock');
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Name contains invalid characters')));
             }
             if (!file_exists($users_file)) {
@@ -131,7 +126,7 @@ if (isset($_REQUEST['command'])) {
             $users = json_decode(file_get_contents($users_file),true);
             $users[$_REQUEST['mobile']] = $_REQUEST['name'];
             file_put_contents($users_file,json_encode($users));
-            unlink('singlethread.lock');
+            rmdir('singlethread.lock');
             die(json_encode(array($_REQUEST['name']=>$_REQUEST['mobile'])));
             break;
         case 'place_register' :
@@ -147,7 +142,7 @@ if (isset($_REQUEST['command'])) {
             $places = json_decode(file_get_contents($places_file),true);
             $places[$_REQUEST['desc']] = array('lat'=>$_REQUEST['lat'],'lng'=>$_REQUEST['lng']);
             file_put_contents($places_file,json_encode($places));
-            unlink('singlethread.lock');
+            rmdir('singlethread.lock');
             die(json_encode($places));
             break;
         case 'new_game' :
@@ -163,7 +158,7 @@ if (isset($_REQUEST['command'])) {
             }
             if (!file_exists($places_file)) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                unlink('singlethread.lock');
+                rmdir('singlethread.lock');
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'With what place data, huh?')));
             }
             $places = json_decode(file_get_contents($places_file),true);
@@ -179,7 +174,7 @@ if (isset($_REQUEST['command'])) {
             $location['longitude'] = (float)$place['lng'];
             $location['moved_recently'] = true;
             file_put_contents($location_file,json_encode($location));
-            unlink('singlethread.lock');
+            rmdir('singlethread.lock');
             die(json_encode($games[$next_id]));
             break;
         case 'status' :
@@ -191,7 +186,7 @@ if (isset($_REQUEST['command'])) {
 }
 if (!isset($_REQUEST['command'])) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-    unlink('singlethread.lock');
+    rmdir('singlethread.lock');
     die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'I have no idea what you want me to do!')));
 }
 $latitude_move = 0;
@@ -206,4 +201,4 @@ if (!is_null($movement_bearing) && !is_null($command) && in_array($command,$dm_c
 }
 file_put_contents($location_file,json_encode($location));
 echo json_encode($location);
-unlink('singlethread.lock');
+rmdir('singlethread.lock');
