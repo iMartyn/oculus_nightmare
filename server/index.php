@@ -198,7 +198,7 @@ if (isset($_REQUEST['command'])) {
         case 'new_game' :
             $command = 'new_game';
             if (!file_exists($games_file)) {
-                file_put_contents($games_file,json_encode(array()));
+                file_put_contents($games_file,json_encode(array(0=>null)));
             }
             $games = json_decode(file_get_contents($games_file),true);
             if (empty($games)) {
