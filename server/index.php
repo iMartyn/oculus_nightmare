@@ -152,6 +152,12 @@ if (isset($_REQUEST['command'])) {
                 'lat'=>$place['lat'], 'lng'=>$place['lng']);
             file_put_contents($games_file,json_encode($games));
             die(json_encode($games[$next_id]));
+            break;
+        case 'status' :
+            break;
+        default:
+            unset($_REQUEST['command']);
+            break;
     }
 }
 if (!isset($_REQUEST['command'])) {
