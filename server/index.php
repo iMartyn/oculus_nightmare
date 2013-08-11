@@ -148,7 +148,7 @@ if (isset($_REQUEST['command'])) {
             $users[$index] = $_REQUEST['name'];
             file_put_contents($users_file,json_encode($users));
             rmdir($lock_dir);
-            die(json_encode(array($index=>$users[$index])));
+            die(json_encode(array('id'=>$index,'name'=>$users[$index])));
             break;
         case 'client_vote' :
             $command = 'vote';
