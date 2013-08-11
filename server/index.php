@@ -160,7 +160,7 @@ if (isset($_REQUEST['command'])) {
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
             }
             if (!isset($_REQUEST['game_id']) || !array_key_exists($_REQUEST['game_id'],$games) ||
-                $games[$_REQUEST['game_id']]['won'] !== true) {
+                ($games[$_REQUEST['game_id']]['won'])) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
                 rmdir($lock_dir);
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Game not in progress')));
