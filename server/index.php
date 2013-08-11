@@ -11,7 +11,7 @@ $location_file = $data_dir.'/location.json';
 $users_file = $data_dir.'/users.json';
 $places_file = $data_dir.'/places.json';
 $games_file = $data_dir.'/games.json';
-$users_regex = '/^[a-zA-Z_\- ]{4,14}$/i';
+$users_regex = '/^[a-zA-Z_\- ]{3,14}$/i';
 $bearing = 0;
 $dm_commands = array('forward','backward','left','right');
 ini_set('show_errors',0);
