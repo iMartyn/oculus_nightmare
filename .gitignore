@@ -1,3 +1,5 @@
 *~
 .idea/
-server/movement.json
+*.json
+server/data/
+

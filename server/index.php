@@ -5,10 +5,11 @@ $latitude_meters = 100000;
 $longitude_meters = 70000;
 $default_latitude = 53.80134;
 $default_longitude = -1.53687;
-$location_file = 'location.json';
-$users_file = 'users.json';
-$places_file = 'places.json';
-$games_file = 'games.json';
+$data_dir = 'data';
+$location_file = $data_dir.'/location.json';
+$users_file = $data_dir.'/users.json';
+$places_file = $data_dir.'/places.json';
+$games_file = $data_dir.'/games.json';
 $users_regex = '/^[a-zA-Z_\- ]{4,14}$/i';
 $bearing = 0;
 $dm_commands = array('forward','backward','left','right');
@@ -62,6 +63,14 @@ while (!mkdir('singlethread.lock')) {
 header('X-latitude: '.$location['latitude']);
 header('X-longitude: '.$location['longitude']);
 
+if (!is_dir($data_dir)) {
+    // Attempt to create it
+    if (!mkdir($data_dir)){
+        // Oh shit.
+        header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+        die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Could not make a home :(')));
+    }
+}
 $command = null;
 $movement_bearing = null;
 if (isset($_REQUEST['command'])) {
