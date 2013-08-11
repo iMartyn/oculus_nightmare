@@ -40,5 +40,6 @@ img.blink					{-webkit-animation: blink 30s; -webkit-animation-iteration-count: 
 .inter_multi_wrap	{width:320px; height:150px; float:left; text-align:center; color:#fff;}
 .inter_multi		{width:320px; height:125px; background-color:#000; padding-top:15px;}
 .inter_move			{width:320px; height:110px; float:left; text-align:center; padding-top:40px; margin:0 auto;}
+.inter_move:hover	{cursor:pointer;}
 .inter_answer		{padding:5px 0;}
 .inter_answer.inter_tit	{color:#666;}
