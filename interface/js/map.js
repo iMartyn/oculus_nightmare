@@ -62,7 +62,7 @@ function init_map(start_lat, start_lng) {
     styles: [
       {
 	stylers: [
-	  { hue: '#00ffff' },
+	  { hue: '#0000ff' },
 	  { visibility: 'simplified' },
 	  { gamma: 0.5 },
 	  { weight: 0.5 }
@@ -77,7 +77,7 @@ function init_map(start_lat, start_lng) {
       {
 	featureType: 'water',
 	stylers: [
-	  { color: '#00ffff' }
+	  { color: '#0000ff' }
 	]
       }
     ],
