@@ -6,7 +6,7 @@
 
 // Parameters
 // ----------------------------------------------
-var QUALITY = 3;
+var QUALITY = 2;
 var DEFAULT_LOCATION = { lat:53.79857299999999,  lng:-1.5364359999999997 };
 var URL_LOCATION = { lat:53.79857299999999,  lng:-1.5364359999999997 };
 var WEBSOCKET_ADDR = "ws://127.0.0.1:1981";
@@ -693,6 +693,7 @@ function getParams() {
 
 
 var last_poll=0;
+var currentStamp=""
 function poll()
 {
 	var t=(new Date()).getTime();
@@ -704,8 +705,23 @@ function poll()
 			url="server.json";
 		}
 		last_poll=t;
-		$.ajax({ url: url+"?heading="+currHeading,
+		$.ajax({ url: url+"?command=view&heading="+currHeading+"&lat="+currentLocation.lat()+"&lng="+currentLocation.lng(),
+			dataType: "json",
 			success: function(data){
+			var lat=data.latitude;
+			var lng=data.longitude;
+			
+			var stamp=lat+":"+lng;
+			
+			
+			if( currentStamp!=stamp )
+			{
+console.log("Moving to "+stamp);
+				currentStamp=stamp;
+				
+				goto_latlng( lat, lng );
+			}
+				
 //			console.log("Polling!");
 //			console.log(data);
 		}, timeout: 1000});
@@ -723,6 +739,7 @@ streetViewService.getPanoramaByLocation( new google.maps.LatLng( lat, lng ) , 49
     {
 		currentLocation=data.location.latLng;
 		panoLoader.load( data.location.latLng );
+console.log( "Loading to " + data.location.latLng.lat() + " " + data.location.latLng.lng() );
     }
 });    
 
