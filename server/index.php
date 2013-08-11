@@ -12,6 +12,8 @@ $games_file = 'games.json';
 $users_regex = '/^[a-zA-Z_\- ]{4,14}$/i';
 $bearing = 0;
 $dm_commands = array('forward','backward','left','right');
+ini_set('show_errors',0);
+ini_set('log_errors',1);
 
 function float_array_valid($array,$keys) {
     $all_valid = true;
@@ -55,13 +57,13 @@ if (file_exists($location_file)) {
 
 header('Content-type: text/javascript');
 if (file_exists('singlethread.lock')) {
-    sleep(1);
+    usleep(350);
     if (file_exists('singlethread.lock')) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 503 Service Unavailable', true, 503);
         die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Threadlocked!')));
     }
 }
-
+file_put_contents('singlethread.lock', 'locked');
 header('X-latitude: '.$location['latitude']);
 header('X-longitude: '.$location['longitude']);
 
