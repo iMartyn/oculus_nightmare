@@ -20,7 +20,7 @@ function initialize() {
     styles: [
       {
 	stylers: [
-	  { hue: '#890000' },
+	  { hue: '#00ffff' },
 	  { visibility: 'simplified' },
 	  { gamma: 0.5 },
 	  { weight: 0.5 }
@@ -35,7 +35,7 @@ function initialize() {
       {
 	featureType: 'water',
 	stylers: [
-	  { color: '#890000' }
+	  { color: '#00ffff' }
 	]
       }
     ],
