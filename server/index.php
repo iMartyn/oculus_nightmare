@@ -27,6 +27,20 @@ function float_array_valid($array,$keys) {
     return $all_valid;
 }
 
+function process_winners($games,$users) {
+    foreach ($games as $id=>$game) {
+        if ($game['won'] && !array_key_exists('winner',$game)) {
+            $correct_id = in_array($game['correct'],$game['places']);
+            foreach ($game['userdata'] as $userid=>$uservote) {
+                if ($correct_id == $uservote) {
+                    $winners[] = $userid;
+                }
+                $games[$id]['winners'] = $winners;
+            }
+        }
+    }
+}
+
 function valid_name($username) {
     global $users_regex;
     return preg_match($users_regex,$username);
@@ -218,6 +232,7 @@ if (isset($_REQUEST['command'])) {
             foreach ($games as $id=>$game) {
                 $games[$id]['won'] = true;
             }
+            process_winners($games,$users);
             $games[$next_id] = array('id'=>$next_id,'won'=>false,
                 'places'=>$placeList,
                 'lat'=>$place['lat'], 'lng'=>$place['lng'],
