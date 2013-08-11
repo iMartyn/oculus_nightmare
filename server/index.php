@@ -28,14 +28,18 @@ function valid_name($username) {
     return preg_match($users_regex,$username);
 }
 
-function some_random_places($places, $howmany = 4) {
+function some_random_places($places, $howMany = 4, $includeKey = null) {
     $return = array();
-    while (count($return) < $howmany) {
+    if (isset($includeKey) && !is_null($includeKey)) {
+        $return[] = $includeKey;
+    }
+    while (count($return) < $howMany) {
         $tryadding = array_rand($places);
         if (!in_array($tryadding,$return)) {
             $return[] = $tryadding;
         }
     }
+    shuffle($return);
     return $return;
 }
 
@@ -146,10 +150,12 @@ if (isset($_REQUEST['command'])) {
             }
             $places = json_decode(file_get_contents($places_file),true);
             $key = array_rand($places);
+            $placeList = some_random_places($places,4,$key);
             $place = $places[$key];
             $games[$next_id] = array('id'=>$next_id,'won'=>false,
-                'places'=>some_random_places($places,4),
-                'lat'=>$place['lat'], 'lng'=>$place['lng']);
+                'places'=>$placeList,
+                'lat'=>$place['lat'], 'lng'=>$place['lng'],
+                'correct'=>$key);
             file_put_contents($games_file,json_encode($games));
             die(json_encode($games[$next_id]));
             break;
