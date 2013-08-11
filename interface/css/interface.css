@@ -34,12 +34,13 @@ img.blink					{-webkit-animation: blink 30s; -webkit-animation-iteration-count: 
 
 .inter_wrap			{width:640px; height:480px; margin:0 auto; margin-top:20px;}
 .inter_banner		{width:640px; height:200px;margin:0 auto; text-align:center;}
-.inter_map_wrap		{margin:0 auto; text-align:center; width:250px; height:250px; overflow:hidden; border-radius:50%;}
+.inter_foot			{width:560px; padding:0 40px; margin:0 auto;}
+.inter_map_wrap		{float:right; margin:0 auto; text-align:center; width:250px; height:250px; overflow:hidden; border-radius:50%;}
 .inter_map			{top:-20px; width:250px; height:290px; background-color:#222; overflow:hidden;}
-.inter_foot			{width:640px; height:150px; background-color:transparent;}
-.inter_multi_wrap	{width:320px; height:150px; float:left; text-align:center; color:#fff;}
-.inter_multi		{width:320px; height:125px; background-color:#000; padding-top:15px;}
-.inter_move			{width:320px; height:110px; float:left; text-align:center; padding-top:40px; margin:0 auto;}
+.inter_navi			{width:290px; height:250px; background-color:transparent;float:left;}
+.inter_multi_wrap	{width:290px; height:250px; float:left; text-align:left; color:#fff;}
+.inter_multi		{width:290px; height:190px; background-color:#000;}
+.inter_move			{width:290px; height:60px; text-align:left; margin:0 auto;}
 .inter_move:hover	{cursor:pointer;}
-.inter_answer		{padding:5px 0;}
-.inter_answer.inter_tit	{color:#666;}
+.inter_answer		{padding:5px 0; font-size:28px;}
+.inter_answer.first	{padding:0 0 5px 0;}
