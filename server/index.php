@@ -72,15 +72,24 @@ if (isset($_REQUEST['command'])) {
             $command = 'right';
             $movement_bearing = $bearing + (pi()/2);
             break;
-        case 'view' :
         case 'bodge' :
+            $command = 'bodge';
+            if (!float_array_valid($_REQUEST,array('lat','lng'))) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected two floating-point options!')));
+            }
+            $location['latitude'] = (float)$_REQUEST['lat'];
+            $location['longitude'] = (float)$_REQUEST['lng'];
+            $location['moved_recently'] = true;
+            break;
+        case 'view' :
             $command = 'view';
             if (!float_array_valid($_REQUEST,array('heading','lat','lng'))) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected three floating-point options!')));
             }
             $location['bearing'] = (float)$_REQUEST['heading'];
-            if ($_REQUEST['command'] == 'bodge' || (array_key_exists('moved_recently',$location) && !$location['moved_recently'])) {
+            if (array_key_exists('moved_recently',$location) && !$location['moved_recently']) {
                 $location['latitude'] = (float)$_REQUEST['lat'];
                 $location['longitude'] = (float)$_REQUEST['lng'];
             } else {
