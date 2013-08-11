@@ -175,6 +175,7 @@ if (isset($_REQUEST['command'])) {
                 $games[$gameid]['uservotes'] = array();
             }
             $games[$gameid]['uservotes'][$userid] = $_REQUEST['vote'];
+            file_put_contents($games_file,json_encode($games));
             rmdir($lock_dir);
             die(json_encode(array($userid=>$_REQUEST['vote'])));
             break;
