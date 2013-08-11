@@ -8,12 +8,13 @@
 <link rel="stylesheet" type="text/css" href="css/interface.css" media="screen" />
 
 <script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="js/login.js"></script>
 
 
 <div class="action-login">
-	<form action="?" method="get">
+	<form id="login" onsubmit="return false">
 	<div class="action-logid">What's your name?</div>
-	<input type="text" name="name" value="" maxlength="128" style="width:60%" class="action-txt"/>
+	<input id="loginame" type="text" name="name" value="" maxlength="128" style="width:60%" class="action-txt"/>
 	<input type="submit" value="Join" class="action-logbutt"/>
 	</form>
 </div>
