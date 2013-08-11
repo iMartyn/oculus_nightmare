@@ -27,16 +27,18 @@ function float_array_valid($array,$keys) {
     return $all_valid;
 }
 
-function process_winners($games,$users) {
+function process_winners(&$games,$users) {
+    global $lock_dir;
     foreach ($games as $id=>$game) {
-        if ($game['won'] && !array_key_exists('winner',$game)) {
-            $correct_id = in_array($game['correct'],$game['places']);
-            foreach ($game['userdata'] as $userid=>$uservote) {
+        if ($game['won'] && !array_key_exists('winner',$game) && $id > 0 && isset($game['uservotes'])) {
+            // Array search is 0 based!
+            $correct_id = array_search($game['correct'],$game['places']) +1;
+            foreach ($game['uservotes'] as $userid=>$uservote) {
                 if ($correct_id == $uservote) {
                     $winners[] = $userid;
                 }
-                $games[$id]['winners'] = $winners;
             }
+            $games[$id]['winners'] = $winners;
         }
     }
 }
@@ -267,7 +269,10 @@ if (isset($_REQUEST['command'])) {
                 rmdir($lock_dir);
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
             }
-            if (!isset($_REQUEST['game_id']) || !array_key_exists($_REQUEST['game_id'],$games)) {
+            if (!isset($_REQUEST['game_id'])) {
+                $_REQUEST['game_id'] = max(array_keys($games));
+            }
+            if (!array_key_exists($_REQUEST['game_id'],$games)) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
                 rmdir($lock_dir);
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Game not in progress or complete')));
@@ -278,6 +283,8 @@ if (isset($_REQUEST['command'])) {
                 $games[$gameid]['uservotes'] = array();
             }
             $data = array();
+            $data['choices'] = $game['places'];
+            $data['id'] = $gameid;
             if (!is_null($userid)) {
                 $userdata = $game['uservotes'][$userid];
                 $data['userdata'] = $userdata;
@@ -287,6 +294,9 @@ if (isset($_REQUEST['command'])) {
                 $data['results'] = $resultdata;
             }
             $data['complete'] = $game['won'];
+            if (isset($game['winners'])) {
+                $data['winners'] = $game['winners'];
+            }
             rmdir($lock_dir);
             die(json_encode($data));
             break;
