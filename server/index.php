@@ -235,7 +235,7 @@ if (isset($_REQUEST['command'])) {
                 file_put_contents($users_file,json_encode(array('-1'=>'')));
             }
             $users = json_decode(file_get_contents($users_file),true);
-            if (isset($_REQUEST['user_id']) || array_key_exists($_REQUEST['user_id'],$users)) {
+            if (isset($_REQUEST['user_id']) && array_key_exists($_REQUEST['user_id'],$users)) {
                 $userid = $_REQUEST['user_id'];
             } else {
                 $userid = null;
