@@ -121,11 +121,6 @@ if (isset($_REQUEST['command'])) {
             break;
         case 'client_register' :
             $command = 'register';
-            if (!array_key_exists('mobile',$_REQUEST) || !array_key_exists('name',$_REQUEST)) {
-                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                rmdir($lock_dir);
-                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected mobile number and name')));
-            }
             if (!valid_name($_REQUEST['name'])) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
                 rmdir($lock_dir);
@@ -135,10 +130,53 @@ if (isset($_REQUEST['command'])) {
                 file_put_contents($users_file,json_encode(array('-1'=>'')));
             }
             $users = json_decode(file_get_contents($users_file),true);
-            $users[$_REQUEST['mobile']] = $_REQUEST['name'];
+            $index = max(array_keys($users))+1;
+            $users[$index] = $_REQUEST['name'];
             file_put_contents($users_file,json_encode($users));
             rmdir($lock_dir);
-            die(json_encode(array($_REQUEST['name']=>$_REQUEST['mobile'])));
+            die(json_encode(array($index=>$_REQUEST[$index])));
+            break;
+        case 'client_vote' :
+            $command = 'vote';
+            if (!file_exists($users_file)) {
+                file_put_contents($users_file,json_encode(array('-1'=>'')));
+            }
+            $users = json_decode(file_get_contents($users_file),true);
+            if (!is_set($_REQUEST['user_id']) || !array_key_exists($_REQUEST['user_id'],$users)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'User not registered')));
+            }
+            $userid = $_REQUEST['user_id'];
+            if (!file_exists($games_file)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
+            }
+            $games = json_decode(file_get_contents($games_file),true);
+            if (empty($games)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'No games in progress, come back later.')));
+            }
+            if (!is_set($_REQUEST['game_id']) || !array_key_exists($_REQUEST['game_id'],$games) ||
+                $games[$_REQUEST['game_id']]['won'] !== true) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 503 Internal Server Error', true, 503);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Game not in progress')));
+            }
+            $gameid = $_REQUEST['game_id'];
+            if (!isset($_REQUEST['vote']) || !is_numeric($_REQUEST['vote'])) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                rmdir($lock_dir);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected a number to vote for.')));
+            }
+            if (!in_array('uservotes',$games[$gameid])) {
+                $games[$gameid]['uservotes'] = array();
+            }
+            $games[$gameid]['uservotes'][$userid] = $_REQUEST['vote'];
+            rmdir($lock_dir);
+            die(json_encode(array($userid=>$_REQUEST['vote'])));
             break;
         case 'place_register' :
             $command = 'place_register';
