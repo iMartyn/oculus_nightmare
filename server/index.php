@@ -6,6 +6,8 @@ $longitude_meters = 70000;
 $default_latitude = 53.80134;
 $default_longitude = -1.53687;
 $location_file = 'location.json';
+$users_file = 'users.json';
+$users_regex = '/^[a-zA-Z_\- ]{4,14}$/i';
 $bearing = 0;
 $dm_commands = array('forward','backward','left','right');
 
@@ -17,6 +19,11 @@ function float_array_valid($array,$keys) {
         }
     }
     return $all_valid;
+}
+
+function valid_name($username) {
+    global $users_regex;
+    return preg_match($users_regex,$username);
 }
 
 if (file_exists($location_file)) {
@@ -65,6 +72,25 @@ if (isset($_REQUEST['command'])) {
             } else {
                 $location['moved_recently'] = false;
             }
+            break;
+        case 'client_register' :
+            $command = 'register';
+            if (!array_key_exists('mobile',$_REQUEST) || !array_key_exists('name',$_REQUEST)) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected mobile number and name')));
+            }
+            if (!valid_name($_REQUEST['name'])) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Name contains invalid characters')));
+            }
+            if (!file_exists($users_file)) {
+                file_put_contents($users_file,json_encode(array('-1'=>'')));
+            }
+            $users = json_decode(file_get_contents($users_file),true);
+            $users[$_REQUEST['mobile']] = $_REQUEST['name'];
+            file_put_contents($users_file,json_encode($users));
+            die(json_encode($users));
+            die(json_encode(array($_REQUEST['name']=>$_REQUEST['mobile'])));
             break;
     }
 }
