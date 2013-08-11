@@ -7,7 +7,7 @@ jQuery(document).ready(function () {
         jQuery.getJSON(action_url+"&name="+name,function(data) {
 			myuserdata = data;
 			jQuery("#login-page").hide();
-			jQuery("#vote-page").show();
+			voting_start();
 			});
     });
 });
