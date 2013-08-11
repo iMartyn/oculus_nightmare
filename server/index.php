@@ -7,6 +7,8 @@ $default_latitude = 53.80134;
 $default_longitude = -1.53687;
 $location_file = 'location.json';
 $users_file = 'users.json';
+$places_file = 'places.json';
+$games_file = 'games.json';
 $users_regex = '/^[a-zA-Z_\- ]{4,14}$/i';
 $bearing = 0;
 $dm_commands = array('forward','backward','left','right');
@@ -89,8 +91,22 @@ if (isset($_REQUEST['command'])) {
             $users = json_decode(file_get_contents($users_file),true);
             $users[$_REQUEST['mobile']] = $_REQUEST['name'];
             file_put_contents($users_file,json_encode($users));
-            die(json_encode($users));
             die(json_encode(array($_REQUEST['name']=>$_REQUEST['mobile'])));
+            break;
+        case 'place_register' :
+            $command = 'place_register';
+            if (!array_key_exists('desc',$_REQUEST) || !array_key_exists('lat',$_REQUEST) || !array_key_exists('lng',$_REQUEST) ||
+                !is_numeric($_REQUEST['lat']) || !is_numeric($_REQUEST['lng'])) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Expected description, lat, lng')));
+            }
+            if (!file_exists($places_file)) {
+                file_put_contents($places_file,json_encode(array()));
+            }
+            $places = json_decode(file_get_contents($places_file),true);
+            $places[$_REQUEST['desc']] = array('lat'=>$_REQUEST['lat'],'lng'=>$_REQUEST['lng']);
+            file_put_contents($places_file,json_encode($places));
+            die(json_encode($places));
             break;
     }
 }
