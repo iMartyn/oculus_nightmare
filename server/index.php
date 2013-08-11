@@ -127,7 +127,7 @@ if (isset($_REQUEST['command'])) {
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Name contains invalid characters')));
             }
             if (!file_exists($users_file)) {
-                file_put_contents($users_file,json_encode(array('-1'=>'')));
+                file_put_contents($users_file,json_encode(array('0'=>'')));
             }
             $users = json_decode(file_get_contents($users_file),true);
             $index = max(array_keys($users))+1;
@@ -202,7 +202,7 @@ if (isset($_REQUEST['command'])) {
             }
             $games = json_decode(file_get_contents($games_file),true);
             if (empty($games)) {
-                $next_id = 0;
+                $next_id = 1;
             } else {
                 $next_id = max(array_keys($games))+1;
             }
@@ -233,7 +233,7 @@ if (isset($_REQUEST['command'])) {
         case 'game_status' :
             $command = 'game_status';
             if (!file_exists($users_file)) {
-                file_put_contents($users_file,json_encode(array('-1'=>'')));
+                file_put_contents($users_file,json_encode(array('0'=>'')));
             }
             $users = json_decode(file_get_contents($users_file),true);
             if (isset($_REQUEST['user_id']) && array_key_exists($_REQUEST['user_id'],$users)) {
@@ -258,10 +258,10 @@ if (isset($_REQUEST['command'])) {
                 die(json_encode(array('latitude'=>-1,'longitude'=>-1,'failure'=>'Game not in progress or complete')));
             }
             $gameid = $_REQUEST['game_id'];
+            $game = $games[$gameid];
             if (!in_array('uservotes',$games[$gameid])) {
                 $games[$gameid]['uservotes'] = array();
             }
-            $game = $games[$gameid];
             $data = array();
             if (!is_null($userid)) {
                 $userdata = $game['uservotes'][$userid];
