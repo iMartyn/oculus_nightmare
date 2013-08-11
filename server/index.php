@@ -157,6 +157,10 @@ if (isset($_REQUEST['command'])) {
                 'lat'=>$place['lat'], 'lng'=>$place['lng'],
                 'correct'=>$key);
             file_put_contents($games_file,json_encode($games));
+            $location['latitude'] = (float)$place['lat'];
+            $location['longitude'] = (float)$place['lng'];
+            $location['moved_recently'] = true;
+            file_put_contents($location_file,json_encode($location));
             die(json_encode($games[$next_id]));
             break;
         case 'status' :
