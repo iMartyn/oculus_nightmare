@@ -38,7 +38,10 @@ function process_winners(&$games,$users) {
                     $winners[] = $userid;
                 }
             }
-            $games[$id]['winners'] = $winners;
+            if (count($winners)) {
+                $games[$id]['winners'] = $winners;
+                $games[$id]['final_winner'] = array_rand($winners);
+            }
         }
     }
 }
