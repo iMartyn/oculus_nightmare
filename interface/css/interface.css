@@ -67,3 +67,5 @@ img.blink					{-webkit-animation: blink 30s; -webkit-animation-iteration-count: 
 .action-endbutt:hover	{cursor:pointer; background-color:#666;}
 
 
+#vote-page	{display:none;}
+.action-login.hidden	{display:none;}
